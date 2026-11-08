@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Curhat Hati untuk Kita 💌</title>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<style>
+:root{--bg:#ffe4ef;--card:#fff;--ink:#7a2a4d;--soft:#b5577f;--pink:#ff8fb8;--deep:#ec4a8a;--line:#ffc2da;--input:#fff7fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#3a1428;--card:#4d1d37;--ink:#ffe4ef;--soft:#ffb3d1;--pink:#ff8fb8;--deep:#ff6aa5;--line:#7a3358;--input:#3f1730;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#3a1428;--card:#4d1d37;--ink:#ffe4ef;--soft:#ffb3d1;--pink:#ff8fb8;--deep:#ff6aa5;--line:#7a3358;--input:#3f1730;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Quicksand","Nunito","Trebuchet MS",system-ui,sans-serif;line-height:1.55;overflow-x:hidden}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.hearts span{position:absolute;bottom:-40px;animation:up linear infinite;opacity:.55}
+@keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+main{position:relative;z-index:1;max-width:620px;margin:0 auto;padding:22px 16px 60px}
+header{text-align:center;margin-bottom:18px}
+.bear{font-size:64px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+h1{font-size:26px;margin:6px 0;color:var(--deep)}
+.note{background:var(--card);border:2px dashed var(--pink);border-radius:20px;padding:14px 16px;font-size:14.5px;color:var(--soft);margin-top:12px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:16px;margin:16px 0;box-shadow:0 6px 0 var(--line)}
+.q{font-weight:700;margin:0 0 10px;font-size:16px}
+.q b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--pink);color:#fff;margin-right:8px;font-size:14px}
+textarea,input[type=text]{width:100%;border:2px solid var(--line);background:var(--input);color:var(--ink);border-radius:16px;padding:12px;font:inherit;font-size:15px;outline:none}
+textarea{min-height:96px;resize:vertical}
+textarea:focus,input:focus{border-color:var(--deep)}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.opts button{border:2px solid var(--line);background:var(--input);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}
+.opts button.on{background:var(--deep);border-color:var(--deep);color:#fff}
+.btn{display:block;width:100%;border:0;border-radius:999px;padding:15px;font:inherit;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(135deg,#ff8fb8,#ec4a8a);box-shadow:0 5px 0 #c83572;cursor:pointer;margin-top:8px}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #c83572}
+.btn.wa{background:linear-gradient(135deg,#6ee7a0,#22b866);box-shadow:0 5px 0 #168a4b;text-decoration:none;text-align:center}
+#done{display:none;text-align:center}
+#msg{font-size:14px;color:var(--soft);text-align:center;margin-top:10px;min-height:20px}
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+<main>
+<header>
+<div class="bear">🧸💗</div>
+<h1>Curhat Hati untuk Kita</h1>
+<div class="note">🌸 Kamu boleh mencurahkan semua yang kamu rasa di sini, kalau memang kamu masih belum mood untuk bicara langsung. Jawab pelan-pelan ya, jujur saja. 💌</div>
+</header>
+
+<div class="card"><p class="q">Namamu siapa, sayang? 🎀</p><input type="text" id="nama" placeholder="Tulis namamu…"></div>
+
+<div id="qs"></div>
+
+<button class="btn" id="go">💖 Kirim &amp; Download Jawabanku</button>
+<div id="msg"></div>
+
+<div class="card" id="done">
+<div style="font-size:44px">💌</div>
+<p><b>Jawabanmu sudah jadi!</b><br>Kalau WhatsApp belum terbuka otomatis, tekan tombol di bawah, lalu kirim file Word yang sudah kamu download. 🥰</p>
+<button class="btn wa" id="sh" style="display:none">📎 Kirim File ke WhatsApp</button>
+<a class="btn wa" id="wa" target="_blank" rel="noopener">💬 Buka WhatsApp</a>
+</div>
+</main>
+
+<script>
+var QS=[
+ "Apa yang kamu rasakan saat ini terhadap pasanganmu?",
+ "Menurut sudut pandangmu, pasanganmu ini benar atau tidak melakukan hal tersebut?",
+ "Apa yang kamu harapkan dari hubungan ini agar kita berdua bisa berjalan dengan harmonis?",
+ "Sesayang apa dirimu terhadap pasanganmu?",
+ "Apakah kamu sudah memaafkan dan berbaikan dengan pasanganmu?"
+];
+var CHOICES={1:["Benar 🥺","Tidak benar 😤","Dua-duanya salah 🙈"],4:["Sudah, kita baikan 🥰","Belum, masih butuh waktu 🌧️","Sedikit lagi 🤏"]};
+var WA_NUM="6287788369895";
+var ans=QS.map(function(){return{pick:"",text:""}});
+
+var qs=document.getElementById("qs");
+QS.forEach(function(q,i){
+  var c=document.createElement("div");c.className="card";
+  var p=document.createElement("p");p.className="q";
+  var n=document.createElement("b");n.textContent=i+1;
+  p.appendChild(n);p.appendChild(document.createTextNode(q));c.appendChild(p);
+  if(CHOICES[i]){
+    var o=document.createElement("div");o.className="opts";
+    CHOICES[i].forEach(function(t){
+      var b=document.createElement("button");b.type="button";b.textContent=t;
+      b.onclick=function(){ans[i].pick=t;[].forEach.call(o.children,function(x){x.classList.remove("on")});b.classList.add("on")};
+      o.appendChild(b);
+    });
+    c.appendChild(o);
+  }
+  var t=document.createElement("textarea");
+  t.placeholder=i==3?"Ceritakan sedalam apa sayangmu… 💗":"Tulis jawabanmu di sini… ✨";
+  t.oninput=function(){ans[i].text=t.value};
+  c.appendChild(t);qs.appendChild(c);
+});
+
+var H=document.getElementById("hearts"),em=["💗","💕","🌸","🎀","💖"];
+for(var k=0;k<16;k++){var s=document.createElement("span");s.textContent=em[k%5];s.style.left=(Math.random()*100)+"%";s.style.fontSize=(14+Math.random()*18)+"px";s.style.animationDuration=(9+Math.random()*10)+"s";s.style.animationDelay=(-Math.random()*14)+"s";H.appendChild(s)}
+
+function waLink(nama){
+  var t="Hai sayang 💌 Ini jawabanku dari \"Curhat Hati untuk Kita\"" + (nama?" (dari "+nama+")":"") + ". File Word-nya aku kirim ya 🥰";
+  return "https://wa.me/"+WA_NUM+"?text="+encodeURIComponent(t);
+}
+
+async function buildDoc(nama){
+  var d=docx,PINK="EC4A8A",SOFT="B5577F",LIGHT="FFE4EF";
+  var kids=[];
+  function P(runs,opts){return new d.Paragraph(Object.assign({children:runs},opts||{}))}
+  function R(text,o){return new d.TextRun(Object.assign({text:text,font:"Georgia"},o||{}))}
+  var line={bottom:{style:d.BorderStyle.DOUBLE,size:6,color:"FF8FB8",space:4}};
+  kids.push(P([R("💗 ✿ 💗 ✿ 💗 ✿ 💗",{color:"FF8FB8",size:28})],{alignment:d.AlignmentType.CENTER}));
+  kids.push(P([R("Surat Curhat Hati",{bold:true,size:56,color:PINK})],{alignment:d.AlignmentType.CENTER,spacing:{before:120}}));
+  kids.push(P([R("untuk Kita Berdua",{italics:true,size:32,color:SOFT})],{alignment:d.AlignmentType.CENTER,border:line,spacing:{after:200}}));
+  var tgl=new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+  kids.push(P([R("Dari: ",{bold:true,color:SOFT}),R(nama||"Kekasihku",{color:PINK,bold:true}),R("    •    "+tgl,{color:SOFT,italics:true})],{alignment:d.AlignmentType.CENTER,spacing:{after:300}}));
+  QS.forEach(function(q,i){
+    kids.push(P([R("🎀 "+(i+1)+". "+q,{bold:true,size:26,color:PINK})],{spacing:{before:260,after:100}}));
+    var a=ans[i],txt=(a.text||"").trim();
+    var lines=(txt||(a.pick?"":"(belum dijawab)")).split(/\n/).filter(function(l,j,arr){return l||arr.length===1});
+    kids.push(P((a.pick?[R("✿ "+a.pick,{bold:true,color:SOFT,size:24})]:[]),{shading:{type:d.ShadingType.CLEAR,fill:LIGHT},border:{left:{style:d.BorderStyle.SINGLE,size:24,color:"FF8FB8",space:8}},spacing:{after:0},indent:{left:200}}));
+    lines.forEach(function(l){kids.push(P([R(l,{italics:true,size:24,color:"7A2A4D"})],{shading:{type:d.ShadingType.CLEAR,fill:LIGHT},border:{left:{style:d.BorderStyle.SINGLE,size:24,color:"FF8FB8",space:8}},spacing:{after:0},indent:{left:200}}))});
+  });
+  kids.push(P([R("💌 Dibuat dengan penuh cinta 💌",{italics:true,color:SOFT,size:24})],{alignment:d.AlignmentType.CENTER,spacing:{before:500},border:{top:{style:d.BorderStyle.DOUBLE,size:6,color:"FF8FB8",space:8}}}));
+  kids.push(P([R("🌸 💗 🌸 💗 🌸",{color:"FF8FB8",size:28})],{alignment:d.AlignmentType.CENTER}));
+  var doc=new d.Document({sections:[{properties:{page:{borders:{pageBorders:{display:d.PageBorderDisplay.ALL_PAGES,offsetFrom:d.PageBorderOffsetFrom.PAGE},pageBorderTop:{style:d.BorderStyle.DOUBLE,size:12,color:"FF8FB8",space:24},pageBorderBottom:{style:d.BorderStyle.DOUBLE,size:12,color:"FF8FB8",space:24},pageBorderLeft:{style:d.BorderStyle.DOUBLE,size:12,color:"FF8FB8",space:24},pageBorderRight:{style:d.BorderStyle.DOUBLE,size:12,color:"FF8FB8",space:24}}}},children:kids}]});
+  return d.Packer.toBlob(doc);
+}
+
+var msg=document.getElementById("msg"),done=document.getElementById("done");
+document.getElementById("go").onclick=async function(){
+  var nama=document.getElementById("nama").value.trim();
+  var filled=ans.some(function(a){return a.text.trim()||a.pick});
+  if(!filled){msg.textContent="Isi minimal satu jawaban dulu ya, sayang 🥺";return}
+  msg.textContent="Lagi bikin surat cintanya… 💞";
+  var wa=waLink(nama);document.getElementById("wa").href=wa;
+  try{
+    if(typeof docx==="undefined"){msg.textContent="Pembuat Word gagal dimuat. Cek internet lalu muat ulang halaman ya 🥺";return}
+    var blob=await buildDoc(nama);
+    var f=new File([blob],"Surat-Curhat-Hati.docx",{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+    var sh=document.getElementById("sh");
+    try{if(navigator.canShare&&navigator.canShare({files:[f]})){sh.style.display="block";sh.onclick=function(){navigator.share({files:[f],text:"Hai sayang 💌 ini jawabanku"}).catch(function(){})}}}catch(x){}
+    var dl=window.claude&&await window.claude.use("downloads");
+    if(!dl){msg.textContent="Download belum tersedia di tampilan ini 😢";done.style.display="block";return}
+    await dl.save({filename:"Surat-Curhat-Hati"+(nama?"-"+nama.replace(/\s+/g,"-"):"")+".docx",data:blob});
+    msg.textContent="Berhasil! Membuka WhatsApp… 💚";done.style.display="block";
+    var w=window.open(wa,"_blank");
+    if(!w)msg.textContent="Tekan tombol hijau di bawah untuk buka WhatsApp 💚";
+    done.scrollIntoView({behavior:"smooth"});
+  }catch(e){
+    msg.textContent=(e&&e.code==="declined")?"Download dibatalkan. Coba lagi kapan pun kamu siap ya 💗":"Ups, ada yang salah. Coba lagi ya 🥺";
+  }
+};
+</script>
+</body>
+</html>
